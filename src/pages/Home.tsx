@@ -39,6 +39,7 @@ function Home() {
           <div className="mt-8 sm:mt-12 text-xs sm:text-sm space-x-6 text-neutral-500">
             <a href="https://github.com/sxdxde" target="_blank" rel="noreferrer" className="underline underline-offset-4 hover:text-neutral-800 transition-colors">Github</a>
             <a href="https://www.linkedin.com/in/sudarshan-sudhakar/" target="_blank" rel="noreferrer" className="underline underline-offset-4 hover:text-neutral-800 transition-colors">linkedin</a>
+            <a href="https://drive.google.com/file/d/1rOqxTJqHVSgxM0CmVAUSF9Kl4hgg79hY/view?usp=sharing" target="_blank" rel="noreferrer" className="underline underline-offset-4 hover:text-neutral-800 transition-colors">resume</a>
             <a href="mailto:sudarshansudhakar@gmail.com" className="underline underline-offset-4 hover:text-neutral-800 transition-colors">email</a>
             <a href="https://x.com/suiiddy" target="_blank" rel="noreferrer" className="underline underline-offset-4 hover:text-neutral-800 transition-colors">X</a>
           </div>
