@@ -89,6 +89,13 @@ const projects: Project[] = [
       },
     ],
   },
+  {
+    title: 'TEMPO — Timing Engine for Micro-batch Policy Optimization',
+    tagline: 'When should a GPU stop waiting and start serving?',
+    repo: 'https://github.com/sxdxde/RESEARCH-Smart-Caching-using-Deep-Reinforment-Learning-',
+    description:
+      "An inference server gets a constant stream of requests, and dispatching them in a batch is a trade-off: serve too early and tiny batches waste GPU capacity; wait too long and clients blow their latency SLA. TEMPO trains a PPO agent that decides every 10 ms whether to Wait or Serve the queued requests.\n\nThe agent observes a 7-dimensional state (queue size, oldest wait, EMA arrival rate, time since last dispatch, batch fill ratio, time of day, and an urgency ratio that folds GPU processing time into the SLA budget) and is rewarded for throughput while being penalised for latency and SLA violations. It is evaluated against a Cloudflare-style dual-threshold heuristic and a greedy min-batch baseline, and ships with a drop-in deployment middleware.",
+  },
 ];
 
 function Projects() {
