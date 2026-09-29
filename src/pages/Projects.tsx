@@ -94,7 +94,36 @@ const projects: Project[] = [
     tagline: 'When should a GPU stop waiting and start serving?',
     repo: 'https://github.com/sxdxde/RESEARCH-Smart-Caching-using-Deep-Reinforment-Learning-',
     description:
-      "An inference server gets a constant stream of requests, and dispatching them in a batch is a trade-off: serve too early and tiny batches waste GPU capacity; wait too long and clients blow their latency SLA. TEMPO trains a PPO agent that decides every 10 ms whether to Wait or Serve the queued requests.\n\nThe agent observes a 7-dimensional state (queue size, oldest wait, EMA arrival rate, time since last dispatch, batch fill ratio, time of day, and an urgency ratio that folds GPU processing time into the SLA budget) and is rewarded for throughput while being penalised for latency and SLA violations. It is evaluated against a Cloudflare-style dual-threshold heuristic and a greedy min-batch baseline, and ships with a drop-in deployment middleware.",
+      "An inference server gets a constant stream of requests, and dispatching them in a batch is a trade-off: serve too early and tiny batches waste GPU capacity; wait too long and clients blow their latency SLA. TEMPO trains a PPO agent that decides every 10 ms whether to Wait or Serve the queued requests.\n\nThe agent observes a 7-dimensional state (queue size, oldest wait, EMA arrival rate, time since last dispatch, batch fill ratio, time of day, and an urgency ratio that folds GPU processing time into the SLA budget) and is rewarded for throughput while being penalised for latency and SLA violations. It is benchmarked against a Cloudflare-style dual-threshold heuristic, alongside Discrete SAC and D3QN agents, on total client-perceived latency (queue wait + GPU time) against a 500 ms SLA, and ships with a drop-in deployment middleware.\n\nHeadline result: the learned policy matters most under load. At peak traffic (5,000 req/s) PPO earns roughly 9× the reward of the fixed heuristic while holding P95 latency at ~92 ms, because it grows its batches to ~424 requests where the heuristic averages ~220 and its P95 climbs to 435 ms, close to the SLA. At the standard 2,000 req/s the gap closes: PPO matches the heuristic's reward with lower P95 latency, but with a heavier P99 tail, and it does not beat it outright. At off-peak traffic (400 req/s) PPO is the weakest of the four agents. D3QN was competitive with PPO at peak load, so the win is for learned batching in general, not PPO specifically.\n\nThe learned decision boundary is curved, not the two straight lines of the heuristic: the agent holds off on small queues and shifts its dispatch threshold with time since the last dispatch and the wait of the oldest request.",
+    metrics: [
+      {
+        section: 'Peak load — 5,000 req/s',
+        columns: ['Cloudflare heuristic', 'PPO'],
+        rows: [
+          { label: 'Mean episode reward', a: '74k', b: '681k' },
+          { label: 'P95 total latency (SLA 500 ms)', a: '435 ms', b: '92 ms' },
+          { label: 'Avg batch size', a: '220', b: '424' },
+        ],
+      },
+      {
+        section: 'Standard load — 2,000 req/s',
+        columns: ['Cloudflare heuristic', 'PPO'],
+        rows: [
+          { label: 'Mean episode reward', a: '226k', b: '223k' },
+          { label: 'P95 total latency (SLA 500 ms)', a: '111 ms', b: '70 ms' },
+          { label: 'Avg batch size', a: '248', b: '184' },
+        ],
+      },
+      {
+        section: 'Off-peak load — 400 req/s',
+        columns: ['Cloudflare heuristic', 'PPO'],
+        rows: [
+          { label: 'Mean episode reward', a: '23k', b: '-6k' },
+          { label: 'P95 total latency (SLA 500 ms)', a: '76 ms', b: '154 ms' },
+          { label: 'Avg batch size', a: '34', b: '55' },
+        ],
+      },
+    ],
   },
 ];
 
