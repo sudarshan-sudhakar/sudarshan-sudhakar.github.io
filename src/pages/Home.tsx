@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import bgVideo from '../assets/walkman2.mp4';
+import bgPoster from '../assets/walkman2-poster.jpg';
 
 function Home() {
   return (
@@ -55,6 +56,8 @@ function Home() {
       <div className="w-full md:w-[35%] aspect-[9/16] md:aspect-auto md:h-full relative overflow-hidden bg-[#EEECE1]">
         <video
           src={bgVideo}
+          poster={bgPoster}
+          preload="auto"
           autoPlay
           loop
           muted
