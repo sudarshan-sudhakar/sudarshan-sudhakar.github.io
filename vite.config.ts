@@ -4,6 +4,6 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/-sudarshansudhakar.github.io/',
+  base: '/portfolio/',
   plugins: [react(), tailwindcss()],
 })
