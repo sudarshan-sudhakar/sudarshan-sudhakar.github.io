@@ -6,6 +6,7 @@ interface Publication {
   venue: string;
   status: string;
   abstract: string;
+  figure?: { src: string; alt: string; caption: string };
 }
 
 const publications: Publication[] = [
@@ -14,7 +15,13 @@ const publications: Publication[] = [
     venue: 'Submitted at INDICON 2026',
     status: 'Under Review',
     abstract:
-      "Image quality varies widely in clinical practice, yet most quality-aware training methods cannot observe it directly and instead estimate it from image statistics, since expert quality ratings are rarely recorded alongside diagnosis labels. This paper introduces a quality-adaptive loss function that scales each sample's training loss using a real, expert-assigned quality rating as an input to the loss, rather than to the classifier. Up-weighting low-quality samples outperformed down-weighting, improving balanced accuracy by 0.037 and sensitivity by 0.092 over baseline, a gain a shuffled-quality control confirms depends on real quality information rather than reweighting alone. The full pipeline reaches 0.840 balanced accuracy versus 0.810 without the quality-adaptive loss, with about 65% of the total gain attributable to it alone. Enabled by MCR-SL, the only public skin lesion dataset with per-image expert quality ratings, this paper also reports the first published benchmark on it, along with an ablation study that reversed two seemingly positive findings under closer scrutiny.",
+      "Image quality varies widely in clinical practice, yet most quality-aware training methods cannot observe it directly and instead estimate it from image statistics, since expert quality ratings are rarely recorded alongside diagnosis labels. This paper introduces a quality-adaptive loss function that scales each sample's training loss using a real, expert-assigned quality rating as an input to the loss, rather than to the classifier. Up-weighting low-quality samples outperformed down-weighting, improving balanced accuracy by 0.037 and sensitivity by 0.092 over baseline, a gain a shuffled-quality control confirms depends on real quality information rather than reweighting alone. The full pipeline reaches 0.840 balanced accuracy versus 0.810 without the quality-adaptive loss, with about 65% of the total gain attributable to it alone. The paper also includes an ablation study that reversed two seemingly positive findings under closer scrutiny.",
+    figure: {
+      src: '/images/publication/quality-adaptive-loss/hard_vs_nonhard_gradcam.png',
+      alt: 'Grad-CAM heatmaps comparing baseline and quality-adaptive loss predictions on high-quality and low-quality skin lesion images',
+      caption:
+        'Grad-CAM on higher-quality (top) and lower-quality (bottom) images. The quality-adaptive loss corrects predictions on harder, low-quality samples.',
+    },
   },
 ];
 
@@ -75,6 +82,19 @@ function Publications() {
                         Abstract
                       </p>
                       <p className="text-sm leading-relaxed text-neutral-600">{pub.abstract}</p>
+                      {pub.figure && (
+                        <figure className="pt-3">
+                          <img
+                            src={pub.figure.src}
+                            alt={pub.figure.alt}
+                            loading="lazy"
+                            className="w-full max-w-[480px] mx-auto border border-black/10 bg-white"
+                          />
+                          <figcaption className="mt-2 text-xs text-neutral-500 leading-relaxed">
+                            {pub.figure.caption}
+                          </figcaption>
+                        </figure>
+                      )}
                     </div>
                   </div>
                 </div>
