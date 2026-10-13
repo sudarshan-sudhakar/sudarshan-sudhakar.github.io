@@ -44,12 +44,20 @@ function Home() {
             <a href="https://x.com/suiiddy" target="_blank" rel="noreferrer" className="underline underline-offset-4 hover:text-neutral-800 transition-colors">X</a>
           </div>
 
-          <Link
-            to="/projects"
-            className="mt-6 sm:mt-8 inline-flex items-center gap-2 px-4 py-2 border border-neutral-900/80 text-xs sm:text-sm text-neutral-900 hover:bg-neutral-900 hover:text-white transition-colors"
-          >
-            Projects <span aria-hidden="true">&rarr;</span>
-          </Link>
+          <div className="mt-6 sm:mt-8 flex flex-wrap gap-3">
+            <Link
+              to="/projects"
+              className="inline-flex items-center gap-2 px-4 py-2 border border-neutral-900/80 text-xs sm:text-sm text-neutral-900 hover:bg-neutral-900 hover:text-white transition-colors"
+            >
+              Projects <span aria-hidden="true">&rarr;</span>
+            </Link>
+            <Link
+              to="/publications"
+              className="inline-flex items-center gap-2 px-4 py-2 border border-neutral-900/80 text-xs sm:text-sm text-neutral-900 hover:bg-neutral-900 hover:text-white transition-colors"
+            >
+              Publications <span aria-hidden="true">&rarr;</span>
+            </Link>
+          </div>
         </div>
       </div>
 
