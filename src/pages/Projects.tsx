@@ -19,10 +19,33 @@ interface Project {
   repo: string;
   description: string;
   status?: string;
+  image?: { src: string; alt: string };
   metrics?: MetricGroup[];
 }
 
 const projects: Project[] = [
+  {
+    title: 'NeuroFiLM — Text-Guided Brain Tumor Segmentation on Apple Silicon',
+    tagline: 'Can a radiology report steer a tiny U-Net, trained entirely on a laptop?',
+    repo: 'https://github.com/sxdxde/neurofilm-brats',
+    description:
+      "A lightweight FiLM-conditioned U-Net (8.78M parameters) that fuses FLAIR MRI with radiology reports on BraTS 2020 for whole-tumor segmentation, trained entirely on a MacBook Pro M1 Pro using PyTorch MPS — no CUDA.\n\nMain novelty: the report is encoded once by a frozen CLIP ViT-B/32 text encoder and cached, then injected through FiLM layers (a learned per-channel scale and shift, zero-initialised so the text pathway must earn its effect) at the bottleneck and all four decoder stages. Text conditioning costs only 17.9k parameters, and keeping the 63M-parameter text transformer out of the training loop is what makes laptop training feasible. The image-only baseline is the same network with the embedding zeroed, so any difference is attributable to text alone.\n\nHeadline result: Dice 0.855 and precision 0.937 on 5,504 held-out slices (patient-level split), with 82% of slices above Dice 0.8. Reported honestly: text and image-only tie on Dice — conditioning shifts the precision/recall trade-off (+1.1pp precision, −1.1pp recall) rather than overlap, with a negligible effect size.",
+    image: {
+      src: '/images/publication/quality-adaptive-loss/segmentation_examples.png',
+      alt: 'Example brain tumor segmentation results',
+    },
+    metrics: [
+      {
+        section: 'Held-out test set (56 patients, 5,504 slices)',
+        columns: ['Image-only', 'FiLM + CLIP'],
+        rows: [
+          { label: 'Dice', a: '0.8556', b: '0.8554' },
+          { label: 'Precision', a: '0.9256', b: '0.9365' },
+          { label: 'Recall', a: '0.8740', b: '0.8632' },
+        ],
+      },
+    ],
+  },
   {
     title: 'HATCH — Hebbian Associative-memory Test for Cross-modal Grounding',
     tagline:
@@ -185,6 +208,15 @@ function Projects() {
                       <p className="text-sm leading-relaxed text-neutral-600 whitespace-pre-line">
                         {project.description}
                       </p>
+
+                      {project.image && (
+                        <img
+                          src={project.image.src}
+                          alt={project.image.alt}
+                          loading="lazy"
+                          className="w-full border border-black/10"
+                        />
+                      )}
 
                       {project.metrics?.map((group) => (
                         <div key={group.section}>
