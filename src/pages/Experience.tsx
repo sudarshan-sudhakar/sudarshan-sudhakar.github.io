@@ -154,7 +154,7 @@ function Experience() {
                     <img
                       src={exp.logo}
                       alt={`${exp.org} logo`}
-                      className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 object-contain bg-white border border-black/10 grayscale group-hover:grayscale-0 transition-[filter] duration-300"
+                      className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 object-contain bg-white border border-black/10"
                     />
                     <div>
                       <h2 className="text-base sm:text-lg font-semibold text-neutral-900 group-hover:text-neutral-600 transition-colors">
