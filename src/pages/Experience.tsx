@@ -6,6 +6,7 @@ interface Role {
   period?: string;
   summary: string;
   points?: { heading?: string; text: string }[];
+  photos?: { src: string; alt: string }[];
 }
 
 interface Experience {
@@ -15,7 +16,7 @@ interface Experience {
   location: string;
   roles: Role[];
   skills?: string;
-  documents?: { label: string; href: string }[];
+  documents?: { label: string; href: string; preview: string }[];
 }
 
 const experiences: Experience[] = [
@@ -58,6 +59,10 @@ const experiences: Experience[] = [
           { text: 'Helped students get from an idea to a working implementation.' },
           { text: 'Answered students’ questions and explained concepts they found difficult.' },
         ],
+        photos: [
+          { src: '/images/experience/ta-1.jpeg', alt: 'Teaching an SVM session in a lecture hall' },
+          { src: '/images/experience/ta-2.jpeg', alt: 'Writing SVM derivations on the blackboard' },
+        ],
       },
     ],
   },
@@ -74,7 +79,7 @@ const experiences: Experience[] = [
           'Developing an AI mentor system that provides personalized guidance and career support for users on the SwitchiT platform.',
       },
     ],
-    documents: [{ label: 'SwitchiT Offer Letter', href: '/certificates/switchit-offer-letter.pdf' }],
+    documents: [{ label: 'SwitchiT Offer Letter', href: '/certificates/switchit-offer-letter.pdf', preview: '/images/experience/previews/switchit-offer-letter.png' }],
   },
   {
     org: 'Yellow.ai',
@@ -102,7 +107,7 @@ const experiences: Experience[] = [
     skills:
       'Conversational AI (Yellow.ai), Generative AI Applications, Natural Language Processing (NLP), Data Classification, Workflow Automation, Team Collaboration, Applied Machine Learning',
     documents: [
-      { label: 'Internship Completion Certificate', href: '/certificates/yellowai-completion-certificate.pdf' },
+      { label: 'Internship Completion Certificate', href: '/certificates/yellowai-completion-certificate.pdf', preview: '/images/experience/previews/yellowai-completion-certificate.png' },
     ],
   },
   {
@@ -124,7 +129,7 @@ const experiences: Experience[] = [
         ],
       },
     ],
-    documents: [{ label: 'GDSC Acceptance Mail', href: '/certificates/gdsc-acceptance-mail.pdf' }],
+    documents: [{ label: 'GDSC Acceptance Mail', href: '/certificates/gdsc-acceptance-mail.pdf', preview: '/images/experience/previews/gdsc-acceptance-mail.png' }],
   },
 ];
 
@@ -211,6 +216,19 @@ function Experience() {
                               ))}
                             </ul>
                           )}
+                          {role.photos && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                              {role.photos.map((photo) => (
+                                <img
+                                  key={photo.src}
+                                  src={photo.src}
+                                  alt={photo.alt}
+                                  loading="lazy"
+                                  className="w-full aspect-[16/10] object-cover border border-black/10"
+                                />
+                              ))}
+                            </div>
+                          )}
                         </div>
                       ))}
 
@@ -224,16 +242,26 @@ function Experience() {
                       )}
 
                       {exp.documents && (
-                        <div className="flex flex-wrap gap-x-6 gap-y-2">
+                        <div className="space-y-3">
                           {exp.documents.map((doc) => (
                             <a
                               key={doc.href}
                               href={doc.href}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-block text-xs sm:text-sm underline underline-offset-4 text-neutral-900 hover:text-neutral-600 transition-colors"
+                              className="flex items-center gap-4 group/doc"
                             >
-                              {doc.label} &rarr;
+                              <span className="shrink-0 w-32 h-20 sm:w-40 sm:h-24 overflow-hidden bg-white border border-black/10 group-hover/doc:border-black/30 transition-colors">
+                                <img
+                                  src={doc.preview}
+                                  alt={`Preview of ${doc.label}`}
+                                  loading="lazy"
+                                  className="w-full object-cover object-top"
+                                />
+                              </span>
+                              <span className="text-xs sm:text-sm font-medium text-neutral-900 underline-offset-4 group-hover/doc:underline">
+                                {doc.label} &rarr;
+                              </span>
                             </a>
                           ))}
                         </div>
