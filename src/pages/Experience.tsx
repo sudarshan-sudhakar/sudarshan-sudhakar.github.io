@@ -22,7 +22,7 @@ interface Experience {
 const experiences: Experience[] = [
   {
     org: 'IIITDM Kancheepuram',
-    logo: '/images/experience/iiitdm.jpeg',
+    logo: '/images/experience/iiitdm.png',
     meta: 'Research & Teaching',
     location: 'Chennai, Tamil Nadu, India · On-site',
     roles: [
@@ -68,7 +68,7 @@ const experiences: Experience[] = [
   },
   {
     org: 'SwitchiT',
-    logo: '/images/experience/switchit.jpeg',
+    logo: '/images/experience/switchit.png',
     meta: 'Internship',
     location: 'Remote',
     roles: [
@@ -92,7 +92,7 @@ const experiences: Experience[] = [
   },
   {
     org: 'Yellow.ai',
-    logo: '/images/experience/yellowai.jpeg',
+    logo: '/images/experience/yellowai.png',
     meta: 'Internship',
     location: 'Abu Dhabi Emirate, United Arab Emirates · Hybrid',
     roles: [
@@ -121,7 +121,7 @@ const experiences: Experience[] = [
   },
   {
     org: 'Google Developer Student Clubs',
-    logo: '/images/experience/gdsc.jpeg',
+    logo: '/images/experience/gdsc.png',
     meta: 'Leadership',
     location: 'Chennai, Tamil Nadu, India · On-site',
     roles: [
@@ -168,7 +168,7 @@ function Experience() {
                     <img
                       src={exp.logo}
                       alt={`${exp.org} logo`}
-                      className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 object-contain bg-white border border-black/10"
+                      className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 object-contain"
                     />
                     <div>
                       <h2 className="text-base sm:text-lg font-semibold text-neutral-900 group-hover:text-neutral-600 transition-colors">
