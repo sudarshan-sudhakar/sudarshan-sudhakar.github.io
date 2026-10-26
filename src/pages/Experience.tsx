@@ -76,7 +76,16 @@ const experiences: Experience[] = [
         title: 'AI Engineer Intern',
         period: 'Sep 2025 - Apr 2026 · 8 mos',
         summary:
-          'Developing an AI mentor system that provides personalized guidance and career support for users on the SwitchiT platform.',
+          'Worked on SwitchiT, a marketplace platform, building AI agents that provide personalised automation services for individual users across the platform’s ecosystem.',
+        points: [
+          { text: 'Built 15+ production agentic workflows, each coordinating multiple tools, with state-machine logic in the style of LangGraph and event-driven scheduling.' },
+          { text: 'Developed a tool-augmented LLM agent that reasons over structured data in conversation, with Claude and local LLM backends integrated.' },
+          { text: 'Built a retrieval-augmented generation (RAG) pipeline using vector search (pgvector) so the agent could answer from the platform’s own data.' },
+          { text: 'Added proactive outreach, where scheduled jobs let the agent reach out to users instead of waiting for them.' },
+          { text: 'Built document-aware pipelines with sandboxed execution, so agents could work with user documents safely.' },
+          { text: 'Worked across the full stack: Fastify, Express, PostgreSQL, Redis, Elasticsearch, Supabase Realtime, and a React and TypeScript front end.' },
+          { text: 'Learned that an agent that works on localhost with mock data can behave very differently with real users, and that token cost becomes a design constraint. I used this to make the workflows cost-aware.' },
+        ],
       },
     ],
     documents: [{ label: 'SwitchiT Offer Letter', href: '/certificates/switchit-offer-letter.pdf', preview: '/images/experience/previews/switchit-offer-letter.png' }],
