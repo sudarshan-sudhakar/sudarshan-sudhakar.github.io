@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Nav from '../components/Nav';
 
 interface MetricRow {
   label: string;
@@ -154,14 +154,9 @@ function Projects() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <div className="min-h-screen w-full bg-[#EEECE1] px-6 py-16 sm:px-8 sm:py-24">
+    <div className="relative min-h-screen w-full bg-[#EEECE1] px-6 py-16 sm:px-8 sm:py-24">
+      <Nav />
       <div className="max-w-[720px] mx-auto">
-        <Link
-          to="/"
-          className="text-xs sm:text-sm text-neutral-500 underline underline-offset-4 hover:text-neutral-800 transition-colors"
-        >
-          &larr; Back
-        </Link>
 
         <h1 className="text-2xl sm:text-4xl font-bold mt-6 mb-8 sm:mb-10 text-neutral-900">
           Projects

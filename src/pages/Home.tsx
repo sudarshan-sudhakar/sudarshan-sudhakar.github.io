@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom';
+import Nav from '../components/Nav';
 import bgVideo from '../assets/walkman2.mp4';
 import bgPoster from '../assets/walkman2-poster.jpg';
 
 function Home() {
   return (
-    <div className="min-h-screen md:h-screen w-full flex flex-col md:flex-row bg-[#EEECE1] overflow-x-hidden md:overflow-hidden">
+    <div className="relative min-h-screen md:h-screen w-full flex flex-col md:flex-row bg-[#EEECE1] overflow-x-hidden md:overflow-hidden">
+      <Nav />
       {/* Left Content (65%) */}
       <div className="w-full md:w-[65%] min-h-[50vh] md:h-full flex items-center justify-center px-6 py-16 sm:px-8 sm:py-24">
         <div className="max-w-[580px] w-full">
@@ -44,20 +45,6 @@ function Home() {
             <a href="https://x.com/suiiddy" target="_blank" rel="noreferrer" className="underline underline-offset-4 hover:text-neutral-800 transition-colors">X</a>
           </div>
 
-          <div className="mt-6 sm:mt-8 flex flex-wrap gap-3">
-            <Link
-              to="/projects"
-              className="inline-flex items-center gap-2 px-4 py-2 border border-neutral-900/80 text-xs sm:text-sm text-neutral-900 hover:bg-neutral-900 hover:text-white transition-colors"
-            >
-              Projects <span aria-hidden="true">&rarr;</span>
-            </Link>
-            <Link
-              to="/publications"
-              className="inline-flex items-center gap-2 px-4 py-2 border border-neutral-900/80 text-xs sm:text-sm text-neutral-900 hover:bg-neutral-900 hover:text-white transition-colors"
-            >
-              Publications <span aria-hidden="true">&rarr;</span>
-            </Link>
-          </div>
         </div>
       </div>
 
