@@ -136,7 +136,7 @@ const tandem: Project = {
 const projects: Project[] = [
   tandem,
   {
-    title: 'NeuroFiLM — Text-Guided Brain Tumor Segmentation on Apple Silicon',
+    title: 'NeuroFiLM — Text-Guided Brain Tumor Segmentation',
     tagline: 'Can a radiology report steer a tiny U-Net, trained entirely on a laptop?',
     repo: 'https://github.com/sxdxde/neurofilm-brats',
     scene: 'neurofilm',

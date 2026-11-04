@@ -428,29 +428,41 @@ function pprScene(W: number, H: number): Scene {
 }
 
 /**
- * NeuroFiLM: an axial brain slice with a tumour. The predicted mask (rust)
+ * NeuroFiLM: a brain outline with a tumour. The predicted mask (rust)
  * wobbles loosely around the true tumour with an image-only model, then snaps
  * tight once "the report" is on, which is whenever the cursor is nearby. The
  * tumour follows the cursor.
  */
 function neuroScene(W: number, H: number): Scene {
-  const cx = 96;
-  const cy = H / 2;
-  const rx = 40;
-  const ry = 25;
+  // Side-view brain drawn in a local 92x58 box placed at (bx, by).
+  const bx = 52;
+  const by = 1;
+  const outline = new Path2D(
+    'M18 40C3 37 0 22 11 12C22 1 46-1 64 4C80 8 92 18 88 30C86 38 80 41 74 41C76 47 68 52 58 51C50 50 47 45 47 41C40 43 28 44 18 40Z',
+  );
+  const folds = new Path2D(
+    'M20 16C30 22 36 14 46 20M50 9C56 17 66 11 74 19M27 33C37 29 45 35 55 31M63 27C71 31 77 25 83 29M14 25C20 23 24 27 28 25M56 45C62 47 69 45 73 44M42 43C43 48 43 52 41 57',
+  );
+  // where the tumour may sit, in canvas coordinates (inside the cerebrum)
+  const minX = bx + 26;
+  const maxX = bx + 70;
+  const minY = by + 13;
+  const maxY = by + 29;
+  const cx = (minX + maxX) / 2;
+  const cy = (minY + maxY) / 2;
   const M = 40;
   const noise = new Array(M).fill(0);
   let t = 0;
   let text = 0;
-  let tx = cx + 8;
-  let ty = cy - 3;
+  let tx = cx;
+  let ty = cy;
 
   return {
     step(dt, pointer, excited) {
       t += dt;
       text = lerp(text, pointer || excited ? 1 : 0, Math.min(1, dt * 4));
-      const gxp = pointer ? clamp(pointer.x, cx - rx * 0.5, cx + rx * 0.5) : cx + 12 * Math.cos(t * 0.45);
-      const gyp = pointer ? clamp(pointer.y, cy - ry * 0.5, cy + ry * 0.5) : cy + 6 * Math.sin(t * 0.6);
+      const gxp = pointer ? clamp(pointer.x, minX, maxX) : cx + 15 * Math.cos(t * 0.45);
+      const gyp = pointer ? clamp(pointer.y, minY, maxY) : cy + 5 * Math.sin(t * 0.6);
       tx = lerp(tx, gxp, Math.min(1, dt * 3));
       ty = lerp(ty, gyp, Math.min(1, dt * 3));
       for (let i = 0; i < M; i++) noise[i] += -noise[i] * 3 * dt + (Math.random() - 0.5) * Math.sqrt(dt) * 7;
@@ -469,30 +481,25 @@ function neuroScene(W: number, H: number): Scene {
       ctx.setLineDash([2, 3]);
       ctx.beginPath();
       ctx.moveTo(34, 24);
-      ctx.lineTo(cx - rx - 2, cy);
+      ctx.lineTo(bx + 4, by + 22);
       ctx.stroke();
       ctx.setLineDash([]);
 
       // brain
-      ctx.strokeStyle = `rgba(${INK},0.55)`;
-      ctx.lineWidth = 1.25;
-      ctx.beginPath();
-      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.strokeStyle = `rgba(${INK},0.12)`;
+      ctx.save();
+      ctx.translate(bx, by);
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = `rgba(${INK},0.6)`;
+      ctx.lineWidth = 1.4;
+      ctx.stroke(outline);
+      ctx.strokeStyle = `rgba(${INK},0.2)`;
       ctx.lineWidth = 1;
-      for (const k of [0.72, 0.45]) {
-        ctx.beginPath();
-        ctx.ellipse(cx, cy, rx * k, ry * k, 0, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-      ctx.beginPath();
-      ctx.moveTo(cx, cy - ry + 2);
-      ctx.lineTo(cx, cy + ry - 2);
-      ctx.stroke();
+      ctx.stroke(folds);
+      ctx.restore();
 
       // true tumour + predicted mask
-      const R = 9;
+      const R = 6.5;
       const radius = (th: number) => R * (1 + 0.18 * Math.sin(3 * th + t * 0.3) + 0.1 * Math.sin(5 * th - t * 0.2));
       const trace = (r: (i: number, th: number) => number) => {
         ctx.beginPath();
@@ -510,8 +517,8 @@ function neuroScene(W: number, H: number): Scene {
       ctx.fillStyle = `rgba(${INK},0.22)`;
       ctx.fill();
 
-      const amp = lerp(1, 0.22, text) * 2.6;
-      const bias = 1.4 * (1 - text);
+      const amp = lerp(1, 0.22, text) * 1.9;
+      const bias = 1.1 * (1 - text);
       trace((i, th) => {
         const s = (noise[(i + M - 1) % M] + 2 * noise[i] + noise[(i + 1) % M]) / 4;
         return radius(th) + bias + s * amp;
