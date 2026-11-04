@@ -20,8 +20,6 @@ interface Project {
   repo: string;
   description: string;
   status?: string;
-  headline?: { value: string; label: string };
-  tags: string[];
   image?: { src: string; alt: string };
   charts?: ChartSpec[];
   metrics?: MetricGroup[];
@@ -31,10 +29,8 @@ const tandem: Project = {
   title: 'TANDEM — Joint Data & Compute Placement for Multimodal KV Caches',
   tagline: 'What if the memory could decide where your data lives and where it gets computed, at the same time?',
   repo: 'https://github.com/sxdxde/TANDEM',
-    headline: { value: '−22%', label: 'energy vs static tiering' },
-    tags: ['Simulation', 'Computer Architecture', 'VLMs'],
   description:
-    "A VLM re-reads its whole KV cache for every word it writes, so that cache ends up hogging the memory bus. TANDEM is a simulated two-tier memory that decides on the fly where each entry lives and where each read gets computed.\n\nOn real attention traces it uses ~22% less energy than static tiering at the same quality, and under contention it moves 11.8× fewer bus bytes than a flat memory. It doesn't win everywhere though: sparse reads give nothing, and random access can cost up to +82% energy. It's all simulated, so the ratios matter more than the absolute numbers.",
+    "A VLM re-reads its whole KV cache for every word it writes, so that cache hogs the memory bus. TANDEM is a simulated two-tier memory that decides on the fly where each entry lives and where each read gets computed.\n\nIt uses ~22% less energy than static tiering at the same quality, and moves 11.8× fewer bus bytes than a flat memory. It doesn't win everywhere: sparse reads give nothing, and random access can cost up to +82% energy.",
   charts: [
     {
       kind: 'bar',
@@ -50,7 +46,7 @@ const tandem: Project = {
         { label: 'Random access, with reuse gate', value: 1.1, display: '+1.1%', bad: true },
       ],
       caption:
-        'Negative means dynamic placement uses less energy than static modality tiering. 10× migration cost unless noted; random access means only 3% of entries are read. Quality stays about neutral for the dense cases.',
+        'Negative = less energy than static tiering. 10× migration cost unless noted.',
     },
     {
       kind: 'line',
@@ -72,7 +68,7 @@ const tandem: Project = {
         },
       ],
       caption:
-        'The saving shrinks as migrations get pricier and flips around 45× the bottom-up cost, which lines up with the ~50× break-even from the earlier cost model. So there’s plenty of headroom, but it isn’t unlimited.',
+        'The saving shrinks as moves get pricier and flips around 45×.',
     },
     {
       kind: 'line',
@@ -107,7 +103,7 @@ const tandem: Project = {
         },
       ],
       caption:
-        'Lower is faster. With only 2 CIM units, always computing in memory is ~5× slower than a flat memory. The adaptive scheduler is better than both fixed choices at every size, because it spills work to the host only when the memory units are backed up.',
+        'Lower is faster. The adaptive scheduler beats both fixed choices at every size.',
     },
     {
       kind: 'bar',
@@ -118,7 +114,7 @@ const tandem: Project = {
         { label: 'Random placement, same amount of INT4', value: 9.4, display: '9.4×', bad: true },
       ],
       caption:
-        'INT4 applied inside the real model, 42 images. Lower means the model’s output moves less. The static figure is back-calculated from the measured 21.8% lower KL, so treat it as approximate.',
+        'Lower means the model’s output moves less. Static is approximate (back-calculated).',
     },
   ],
   metrics: [
@@ -140,8 +136,6 @@ const projects: Project[] = [
     title: 'NeuroFiLM — Text-Guided Brain Tumor Segmentation on Apple Silicon',
     tagline: 'Can a radiology report steer a tiny U-Net, trained entirely on a laptop?',
     repo: 'https://github.com/sxdxde/neurofilm-brats',
-    headline: { value: '0.855', label: 'Dice on held-out slices' },
-    tags: ['PyTorch', 'Medical Imaging', 'Apple Silicon'],
     description:
       "A tiny 8.78M-parameter U-Net that reads a radiology report alongside a brain MRI to segment tumors, trained entirely on a MacBook with no CUDA. The report is encoded once by a frozen CLIP and fed in through FiLM layers, which adds just 17.9k parameters.\n\nResult: Dice 0.855 on 5,504 held-out slices. The honest catch: text and image-only tie on Dice. The text just shifts the precision/recall balance.",
     image: {
@@ -165,8 +159,6 @@ const projects: Project[] = [
     tagline:
       "Does the Dragon Hatchling (BDH) architecture hatch into a usable drop-in replacement for softmax attention?",
     repo: 'https://github.com/sxdxde/HATCH-Hebbian-Associative-memory-Test-for-Cross-modal-grounding',
-    headline: { value: '65.1', label: 'AP50 vs 64.9 baseline' },
-    tags: ['Attention', 'Visual Grounding'],
     description:
       "Swaps BDH's growing outer-product memory in for softmax attention in two visual grounding models, tested on Talk2Car.\n\nIt works as a near drop-in for cross-attention (AP50 65.09 vs 64.92, ~1% more parameters), but drops to roughly half the baseline's accuracy when it replaces dense self-attention over long visual sequences.",
     metrics: [
@@ -191,7 +183,6 @@ const projects: Project[] = [
     title: 'PULSE — Pain, Understanding & Learning State Engine',
     tagline: 'What if a reinforcement learning agent had skin?',
     repo: 'https://github.com/sxdxde/PULSE-Pain-Understanding-Learning-State-Engine',
-    tags: ['Reinforcement Learning', 'PPO'],
     status: 'In Progress',
     description:
       "Normal RL rewards forget instantly. PULSE gives an agent a persistent \"skin\": a grid that stores pain from bad experiences and fades slowly, so danger zones stay avoided across episodes. The policy only vetoes moves into cells that are both painful and genuinely risky.\n\nNow benchmarking 3 agents × 5 seeds against vanilla PPO on reward, goal success and trap rate.",
@@ -200,8 +191,6 @@ const projects: Project[] = [
     title: 'PPR — Probe-Pull-Restart',
     tagline: 'A momentum optimizer that fires cheap trial moves when training stalls, and rolls back when they fail.',
     repo: 'https://github.com/sxdxde/PPR---Probe-Pull-Restart',
-    headline: { value: '½', label: 'the loss on Rastrigin' },
-    tags: ['Optimization', 'PyTorch'],
     status: 'In Progress',
     description:
       "An SGD-with-momentum optimizer that fires cheap trial moves when training stalls, and rolls back to the best checkpoint if they fail.\n\nIt only really helps on low-dimensional non-convex landscapes (halves the converged loss on Rastrigin). On MNIST it just matches SGD. I also retracted an earlier batch of results after finding a missing loss.backward(), and kept that on the record.",
@@ -235,8 +224,6 @@ const projects: Project[] = [
     title: 'TEMPO — Timing Engine for Micro-batch Policy Optimization',
     tagline: 'When should a GPU stop waiting and start serving?',
     repo: 'https://github.com/sxdxde/RESEARCH-Smart-Caching-using-Deep-Reinforment-Learning-',
-    headline: { value: '9×', label: 'reward at peak load' },
-    tags: ['Reinforcement Learning', 'Systems'],
     description:
       "An inference server has to decide when to dispatch queued requests: too early wastes the GPU, too late breaks the latency SLA. TEMPO trains a PPO agent to choose Wait or Serve every 10 ms.\n\nAt peak load (5,000 req/s) it earns ~9× the reward of a Cloudflare-style heuristic while keeping P95 latency at 92 ms. At normal load it only ties, and off-peak it's the weakest, so the win is really about heavy traffic.",
     metrics: [
@@ -271,80 +258,21 @@ const projects: Project[] = [
   },
 ];
 
-function MetricTable({ group }: { group: MetricGroup }) {
-  return (
-    <div>
-      <p className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-neutral-500 mb-2">
-        {group.section}
-      </p>
-      <table className="w-full text-xs sm:text-sm border-collapse">
-        <thead>
-          <tr className="text-neutral-500">
-            <th className="text-left font-normal py-1.5 border-b border-black/10" />
-            <th className="text-left font-normal py-1.5 border-b border-black/10">{group.columns[0]}</th>
-            <th className="text-left font-normal py-1.5 border-b border-black/10">{group.columns[1]}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {group.rows.map((row) => (
-            <tr key={row.label} className="text-neutral-700">
-              <td className="py-1.5 pr-4 border-b border-black/5">{row.label}</td>
-              <td className="py-1.5 pr-4 border-b border-black/5">{row.a}</td>
-              <td className="py-1.5 border-b border-black/5 font-medium text-neutral-900">{row.b}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function Headline({ project, className = '' }: { project: Project; className?: string }) {
-  if (!project.headline) return null;
-  return (
-    <div className={className}>
-      <span className="text-2xl sm:text-3xl font-bold leading-none text-neutral-900 tabular-nums">
-        {project.headline.value}
-      </span>
-      <span className="block mt-1 text-[10px] sm:text-[11px] leading-tight text-neutral-500">
-        {project.headline.label}
-      </span>
-    </div>
-  );
-}
-
 function Projects() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const [moreOpen, setMoreOpen] = useState<Set<number>>(new Set());
-
-  const toggleMore = (index: number) =>
-    setMoreOpen((prev) => {
-      const next = new Set(prev);
-      if (next.has(index)) next.delete(index);
-      else next.add(index);
-      return next;
-    });
 
   return (
     <div className="relative min-h-screen w-full bg-[#EEECE1] px-6 py-16 sm:px-8 sm:py-24">
       <Nav />
       <div className="max-w-[720px] mx-auto">
-        <h1 className="text-2xl sm:text-4xl font-bold mt-6 mb-8 sm:mb-10 text-neutral-900">Projects</h1>
+
+        <h1 className="text-2xl sm:text-4xl font-bold mt-6 mb-8 sm:mb-10 text-neutral-900">
+          Projects
+        </h1>
 
         <div className="divide-y divide-black/10 border-t border-b border-black/10">
           {projects.map((project, index) => {
             const isOpen = openIndex === index;
-            const showMore = moreOpen.has(index);
-
-            // One thing up front, everything else tucked behind "More results".
-            const charts = project.charts ?? [];
-            const metrics = project.metrics ?? [];
-            const heroChart = charts[0];
-            const heroMetric = heroChart ? undefined : metrics[0];
-            const moreCharts = charts.slice(1);
-            const moreMetrics = heroChart ? metrics : metrics.slice(1);
-            const hasMore = moreCharts.length + moreMetrics.length > 0;
-
             return (
               <div key={project.title}>
                 <button
@@ -353,7 +281,7 @@ function Projects() {
                   aria-expanded={isOpen}
                   className="w-full text-left flex items-start justify-between gap-4 py-5 cursor-pointer group"
                 >
-                  <div className="min-w-0">
+                  <div>
                     <h2 className="text-base sm:text-lg font-semibold text-neutral-900 group-hover:text-neutral-600 transition-colors">
                       {project.title}
                       {project.status && (
@@ -362,29 +290,16 @@ function Projects() {
                         </span>
                       )}
                     </h2>
-                    <p className="mt-1.5 text-xs sm:text-sm text-neutral-500 leading-relaxed">{project.tagline}</p>
-                    <div className="mt-2.5 flex flex-wrap gap-1.5">
-                      {project.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-[10px] sm:text-[11px] text-neutral-600 border border-black/10 px-1.5 py-0.5"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <Headline project={project} className="mt-3 sm:hidden" />
+                    <p className="mt-1.5 text-xs sm:text-sm text-neutral-500 leading-relaxed">
+                      {project.tagline}
+                    </p>
                   </div>
-                  <div className="shrink-0 flex items-start gap-4">
-                    <Headline project={project} className="hidden sm:block text-right max-w-[110px]" />
-                    <span
-                      className={`mt-1 text-xl leading-none text-neutral-400 transition-transform duration-200 ${
-                        isOpen ? 'rotate-45' : ''
+                  <span
+                    className={`shrink-0 mt-1 text-xl leading-none text-neutral-400 transition-transform duration-200 ${isOpen ? 'rotate-45' : ''
                       }`}
-                    >
-                      +
-                    </span>
-                  </div>
+                  >
+                    +
+                  </span>
                 </button>
 
                 <div
@@ -406,31 +321,41 @@ function Projects() {
                         />
                       )}
 
-                      {heroChart && <Chart spec={heroChart} />}
-                      {heroMetric && <MetricTable group={heroMetric} />}
+                      {project.charts?.map((chart) => (
+                        <Chart key={chart.title} spec={chart} />
+                      ))}
 
-                      {hasMore && (
-                        <div>
-                          <button
-                            type="button"
-                            onClick={() => toggleMore(index)}
-                            aria-expanded={showMore}
-                            className="text-xs sm:text-sm text-neutral-900 underline underline-offset-4 hover:text-neutral-600 transition-colors cursor-pointer"
-                          >
-                            {showMore ? 'Hide extra results' : 'More results'}
-                          </button>
-                          {showMore && (
-                            <div className="mt-6 space-y-8">
-                              {moreCharts.map((chart) => (
-                                <Chart key={chart.title} spec={chart} />
+                      {project.metrics?.map((group) => (
+                        <div key={group.section}>
+                          <p className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-neutral-500 mb-2">
+                            {group.section}
+                          </p>
+                          <table className="w-full text-xs sm:text-sm border-collapse">
+                            <thead>
+                              <tr className="text-neutral-500">
+                                <th className="text-left font-normal py-1.5 border-b border-black/10" />
+                                <th className="text-left font-normal py-1.5 border-b border-black/10">
+                                  {group.columns[0]}
+                                </th>
+                                <th className="text-left font-normal py-1.5 border-b border-black/10">
+                                  {group.columns[1]}
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {group.rows.map((row) => (
+                                <tr key={row.label} className="text-neutral-700">
+                                  <td className="py-1.5 pr-4 border-b border-black/5">{row.label}</td>
+                                  <td className="py-1.5 pr-4 border-b border-black/5">{row.a}</td>
+                                  <td className="py-1.5 border-b border-black/5 font-medium text-neutral-900">
+                                    {row.b}
+                                  </td>
+                                </tr>
                               ))}
-                              {moreMetrics.map((group) => (
-                                <MetricTable key={group.section} group={group} />
-                              ))}
-                            </div>
-                          )}
+                            </tbody>
+                          </table>
                         </div>
-                      )}
+                      ))}
 
                       <a
                         href={project.repo}
