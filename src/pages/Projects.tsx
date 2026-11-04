@@ -139,6 +139,7 @@ const projects: Project[] = [
     title: 'NeuroFiLM — Text-Guided Brain Tumor Segmentation on Apple Silicon',
     tagline: 'Can a radiology report steer a tiny U-Net, trained entirely on a laptop?',
     repo: 'https://github.com/sxdxde/neurofilm-brats',
+    scene: 'neurofilm',
     description:
       "A tiny 8.78M-parameter U-Net that reads a radiology report alongside a brain MRI to segment tumors, trained entirely on a MacBook with no CUDA. The report is encoded once by a frozen CLIP and fed in through FiLM layers, which adds just 17.9k parameters.\n\nResult: Dice 0.855 on 5,504 held-out slices. The honest catch: text and image-only tie on Dice. The text just shifts the precision/recall balance.",
     image: {
@@ -162,6 +163,7 @@ const projects: Project[] = [
     tagline:
       "Does the Dragon Hatchling (BDH) architecture hatch into a usable drop-in replacement for softmax attention?",
     repo: 'https://github.com/sxdxde/HATCH-Hebbian-Associative-memory-Test-for-Cross-modal-grounding',
+    scene: 'hatch',
     description:
       "Swaps BDH's growing outer-product memory in for softmax attention in two visual grounding models, tested on Talk2Car.\n\nIt works as a near drop-in for cross-attention (AP50 65.09 vs 64.92, ~1% more parameters), but drops to roughly half the baseline's accuracy when it replaces dense self-attention over long visual sequences.",
     metrics: [
@@ -186,6 +188,7 @@ const projects: Project[] = [
     title: 'PULSE — Pain, Understanding & Learning State Engine',
     tagline: 'What if a reinforcement learning agent had skin?',
     repo: 'https://github.com/sxdxde/PULSE-Pain-Understanding-Learning-State-Engine',
+    scene: 'pulse',
     status: 'In Progress',
     description:
       "Normal RL rewards forget instantly. PULSE gives an agent a persistent \"skin\": a grid that stores pain from bad experiences and fades slowly, so danger zones stay avoided across episodes. The policy only vetoes moves into cells that are both painful and genuinely risky.\n\nNow benchmarking 3 agents × 5 seeds against vanilla PPO on reward, goal success and trap rate.",
@@ -194,6 +197,7 @@ const projects: Project[] = [
     title: 'PPR — Probe-Pull-Restart',
     tagline: 'A momentum optimizer that fires cheap trial moves when training stalls, and rolls back when they fail.',
     repo: 'https://github.com/sxdxde/PPR---Probe-Pull-Restart',
+    scene: 'ppr',
     status: 'In Progress',
     description:
       "An SGD-with-momentum optimizer that fires cheap trial moves when training stalls, and rolls back to the best checkpoint if they fail.\n\nIt only really helps on low-dimensional non-convex landscapes (halves the converged loss on Rastrigin). On MNIST it just matches SGD. I also retracted an earlier batch of results after finding a missing loss.backward(), and kept that on the record.",
@@ -227,6 +231,7 @@ const projects: Project[] = [
     title: 'TEMPO — Timing Engine for Micro-batch Policy Optimization',
     tagline: 'When should a GPU stop waiting and start serving?',
     repo: 'https://github.com/sxdxde/RESEARCH-Smart-Caching-using-Deep-Reinforment-Learning-',
+    scene: 'tempo',
     description:
       "An inference server has to decide when to dispatch queued requests: too early wastes the GPU, too late breaks the latency SLA. TEMPO trains a PPO agent to choose Wait or Serve every 10 ms.\n\nAt peak load (5,000 req/s) it earns ~9× the reward of a Cloudflare-style heuristic while keeping P95 latency at 92 ms. At normal load it only ties, and off-peak it's the weakest, so the win is really about heavy traffic.",
     metrics: [
@@ -285,9 +290,9 @@ function Projects() {
                   aria-expanded={isOpen}
                   onPointerEnter={() => setHoveredIndex(index)}
                   onPointerLeave={() => setHoveredIndex(null)}
-                  className="w-full text-left flex items-start justify-between gap-4 py-5 cursor-pointer group"
+                  className="w-full text-left flex items-start justify-between gap-6 py-6 cursor-pointer group"
                 >
-                  <div>
+                  <div className="min-w-0">
                     <h2 className="text-base sm:text-lg font-semibold text-neutral-900 group-hover:text-neutral-600 transition-colors">
                       {project.title}
                       {project.status && (
@@ -299,8 +304,15 @@ function Projects() {
                     <p className="mt-1.5 text-xs sm:text-sm text-neutral-500 leading-relaxed">
                       {project.tagline}
                     </p>
+                    {project.scene && (
+                      <ProjectCanvas
+                        scene={project.scene}
+                        excited={hoveredIndex === index}
+                        className="mt-5 sm:hidden"
+                      />
+                    )}
                   </div>
-                  <div className="shrink-0 flex items-start gap-4">
+                  <div className="shrink-0 self-center flex items-center gap-6 sm:gap-8">
                     {project.scene && (
                       <ProjectCanvas
                         scene={project.scene}
@@ -309,7 +321,7 @@ function Projects() {
                       />
                     )}
                     <span
-                      className={`mt-1 text-xl leading-none text-neutral-400 transition-transform duration-200 ${isOpen ? 'rotate-45' : ''
+                      className={`text-xl leading-none text-neutral-400 transition-transform duration-200 ${isOpen ? 'rotate-45' : ''
                         }`}
                     >
                       +
