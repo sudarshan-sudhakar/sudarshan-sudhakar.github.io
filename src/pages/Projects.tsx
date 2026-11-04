@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Nav from '../components/Nav';
 import { Chart, type ChartSpec } from '../components/Charts';
+import ProjectCanvas, { type SceneName } from '../components/ProjectCanvas';
 
 interface MetricRow {
   label: string;
@@ -20,6 +21,7 @@ interface Project {
   repo: string;
   description: string;
   status?: string;
+  scene?: SceneName;
   image?: { src: string; alt: string };
   charts?: ChartSpec[];
   metrics?: MetricGroup[];
@@ -29,6 +31,7 @@ const tandem: Project = {
   title: 'TANDEM — Joint Data & Compute Placement for Multimodal KV Caches',
   tagline: 'What if the memory could decide where your data lives and where it gets computed, at the same time?',
   repo: 'https://github.com/sxdxde/TANDEM',
+  scene: 'tandem',
   description:
     "A VLM re-reads its whole KV cache for every word it writes, so that cache hogs the memory bus. TANDEM is a simulated two-tier memory that decides on the fly where each entry lives and where each read gets computed.\n\nIt uses ~22% less energy than static tiering at the same quality, and moves 11.8× fewer bus bytes than a flat memory. It doesn't win everywhere: sparse reads give nothing, and random access can cost up to +82% energy.",
   charts: [
@@ -260,6 +263,7 @@ const projects: Project[] = [
 
 function Projects() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
     <div className="relative min-h-screen w-full bg-[#EEECE1] px-6 py-16 sm:px-8 sm:py-24">
@@ -279,6 +283,8 @@ function Projects() {
                   type="button"
                   onClick={() => setOpenIndex(isOpen ? null : index)}
                   aria-expanded={isOpen}
+                  onPointerEnter={() => setHoveredIndex(index)}
+                  onPointerLeave={() => setHoveredIndex(null)}
                   className="w-full text-left flex items-start justify-between gap-4 py-5 cursor-pointer group"
                 >
                   <div>
@@ -294,12 +300,21 @@ function Projects() {
                       {project.tagline}
                     </p>
                   </div>
-                  <span
-                    className={`shrink-0 mt-1 text-xl leading-none text-neutral-400 transition-transform duration-200 ${isOpen ? 'rotate-45' : ''
-                      }`}
-                  >
-                    +
-                  </span>
+                  <div className="shrink-0 flex items-start gap-4">
+                    {project.scene && (
+                      <ProjectCanvas
+                        scene={project.scene}
+                        excited={hoveredIndex === index}
+                        className="hidden sm:block"
+                      />
+                    )}
+                    <span
+                      className={`mt-1 text-xl leading-none text-neutral-400 transition-transform duration-200 ${isOpen ? 'rotate-45' : ''
+                        }`}
+                    >
+                      +
+                    </span>
+                  </div>
                 </button>
 
                 <div
