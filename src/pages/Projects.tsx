@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Nav from '../components/Nav';
+import { Chart, type ChartSpec } from '../components/Charts';
 
 interface MetricRow {
   label: string;
@@ -20,10 +21,117 @@ interface Project {
   description: string;
   status?: string;
   image?: { src: string; alt: string };
+  charts?: ChartSpec[];
   metrics?: MetricGroup[];
 }
 
+const tandem: Project = {
+  title: 'TANDEM — Tiered, Adaptive, Near-memory Data-and-compute placement for Efficient Multimodal KV caches',
+  tagline: 'What if the memory could decide where your data lives and where it gets computed, at the same time?',
+  repo: 'https://github.com/sxdxde/TANDEM',
+  description:
+    "Here's the problem: a vision-language model turns one image into hundreds of visual tokens, and then every single word it writes has to re-read all of their key-value (KV) entries, in every layer. So during decoding, that cache is basically what the memory bus spends its whole life on. TANDEM asks if a runtime can be smarter about it by making two calls together: where each KV entry should live, and where each read should actually be computed.\n\nThe memory has two tiers. HOT is regular FP16 DRAM/HBM, lossless. WARM is INT4 sitting in compute-in-memory arrays: about 10× cheaper per byte, a bit slower, and lossy. A monitor watches how important and how reused each (token, layer) entry really is, then promotes or demotes entries on the fly, knowing every move costs time, energy and bus traffic. A separate scheduler decides whether a WARM read runs inside the memory or gets pulled out to the host, depending on how backed up things are.\n\nIt's a SimPy simulation (3,402 runs in the contention study) driven by real attention traces from SmolVLM-256M and 500M on 42 images, with leave-one-trace-out cross-validation and bootstrap confidence intervals. It started as a Computer Architecture course project at IIITDM Kancheepuram.\n\nWhat worked: when data actually gets reused, dynamic placement uses about 22–23% less energy than static tiering at neutral quality. Put INT4 inside the real model and it nudges the next-token distribution ~22% less than static tiering, and ~9× less than random placement of the same size. Under contention, tiering moves 11.8× fewer bus bytes than a flat memory and finishes in 0.64× the time, and the adaptive spill scheduler beats both \"always compute in memory\" and \"always send it to the host\".\n\nWhat didn't, and I kept it all in the paper: the first synthetic-trace win vanished on real attention (visual tokens only get ~6% of it), the win isn't just a layer prior, it disappears under sparse reads, and one importance score per token only gets you −7.6%. Under random access, dynamic placement can burn up to +82% more energy unless migrations are priced against observed reuse, and even with that gate it missed my own pre-set target. Also, there's no real CIM hardware here, so the absolute energy numbers aren't hardware claims. The ratios between policies are the point.",
+  charts: [
+    {
+      kind: 'bar',
+      title: 'Energy vs static tiering — where dynamic placement wins, and where it doesn’t',
+      rows: [
+        { label: 'Dense reads, SmolVLM-256M', value: -22.3, display: '−22.3%' },
+        { label: 'Dense reads, SmolVLM-500M', value: -23.4, display: '−23.4%' },
+        { label: 'Dense reads, bottom-up migration cost', value: -27.4, display: '−27.4%' },
+        { label: 'Noisy / stale importance signal (weakest case)', value: -18.6, display: '−18.6%' },
+        { label: 'One importance score per token', value: -7.6, display: '−7.6%' },
+        { label: 'Sparse (top-10%) reads', value: 0, display: 'no win', muted: true },
+        { label: 'Random access, no reuse gate', value: 81.9, display: '+81.9%', bad: true },
+        { label: 'Random access, with reuse gate', value: 1.1, display: '+1.1%', bad: true },
+      ],
+      caption:
+        'Negative means dynamic placement uses less energy than static modality tiering. 10× migration cost unless noted; random access means only 3% of entries are read. Quality stays about neutral for the dense cases.',
+    },
+    {
+      kind: 'line',
+      title: 'How expensive can moving data get before it stops paying off?',
+      xLabels: ['1×', '2×', '5×', '10×', '20×', '50×'],
+      xTitle: 'Migration cost, as a multiple of the bottom-up estimate (≈1.05 HOT accesses)',
+      yMin: -32,
+      yMax: 8,
+      yTicks: [-30, -20, -10, 0],
+      baseline: 0,
+      baselineLabel: 'static tiering = 0%',
+      yFormat: (v) => (v > 0 ? `+${v}%` : v < 0 ? `−${Math.abs(v)}%` : '0%'),
+      series: [
+        {
+          name: 'Dynamic vs static (dense reads, energy)',
+          tone: 'ink',
+          values: [-28.1, -27.5, -25.5, -22.3, -15.9, 3.3],
+          labelAt: [0, 3, 4, 5],
+        },
+      ],
+      caption:
+        'The saving shrinks as migrations get pricier and flips around 45× the bottom-up cost, which lines up with the ~50× break-even from the earlier cost model. So there’s plenty of headroom, but it isn’t unlimited.',
+    },
+    {
+      kind: 'line',
+      title: 'Where should a read be computed? Makespan vs flat memory',
+      xLabels: ['2', '4', '8', '16', '32', '64'],
+      xTitle: 'Compute-in-memory units available',
+      yMin: 0,
+      yMax: 5.2,
+      yTicks: [0, 1, 2, 3, 4, 5],
+      baseline: 1,
+      baselineLabel: 'flat memory = 1×',
+      yFormat: (v) => `${v}×`,
+      series: [
+        {
+          name: 'Always compute in memory',
+          tone: 'soft',
+          dashed: true,
+          values: [4.98, 2.5, 1.25, 0.64, 0.33, 0.18],
+          labelAt: [0, 1, 2],
+        },
+        {
+          name: 'Always send to host',
+          tone: 'faint',
+          dashed: true,
+          values: [0.92, 0.92, 0.92, 0.92, 0.92, 0.92],
+        },
+        {
+          name: 'Adaptive spill scheduler',
+          tone: 'ink',
+          values: [0.88, 0.76, 0.6, 0.42, 0.27, 0.15],
+          labelAt: [3],
+        },
+      ],
+      caption:
+        'Lower is faster. With only 2 CIM units, always computing in memory is ~5× slower than a flat memory. The adaptive scheduler is better than both fixed choices at every size, because it spills work to the host only when the memory units are backed up.',
+    },
+    {
+      kind: 'bar',
+      title: 'Does it hurt the real model? Next-token distribution shift (KL, dynamic = 1×)',
+      rows: [
+        { label: 'TANDEM dynamic placement', value: 1, display: '1×' },
+        { label: 'Static modality tiering', value: 1.28, display: '≈1.28×', muted: true },
+        { label: 'Random placement, same amount of INT4', value: 9.4, display: '9.4×', bad: true },
+      ],
+      caption:
+        'INT4 applied inside the real model, 42 images. Lower means the model’s output moves less. The static figure is back-calculated from the measured 21.8% lower KL, so treat it as approximate.',
+    },
+  ],
+  metrics: [
+    {
+      section: 'Tiering vs flat memory, under contention (default resources)',
+      columns: ['Flat memory', 'Tiered'],
+      rows: [
+        { label: 'Bus bytes moved', a: '1×', b: '0.085× (11.8× fewer)' },
+        { label: 'Energy', a: '1×', b: '≈0.11× (9.3× less)' },
+        { label: 'Makespan', a: '1×', b: '0.64×' },
+      ],
+    },
+  ],
+};
+
 const projects: Project[] = [
+  tandem,
   {
     title: 'NeuroFiLM — Text-Guided Brain Tumor Segmentation on Apple Silicon',
     tagline: 'Can a radiology report steer a tiny U-Net, trained entirely on a laptop?',
@@ -212,6 +320,10 @@ function Projects() {
                           className="w-full border border-black/10"
                         />
                       )}
+
+                      {project.charts?.map((chart) => (
+                        <Chart key={chart.title} spec={chart} />
+                      ))}
 
                       {project.metrics?.map((group) => (
                         <div key={group.section}>
