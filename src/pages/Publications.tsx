@@ -5,22 +5,56 @@ interface Publication {
   title: string;
   venue: string;
   status: string;
-  abstract: string;
+  authors: string;
+  affiliation: string;
+  sections: { heading: string; body: string }[];
+  tools: string;
+  links: { label: string; href: string }[];
   figure?: { src: string; alt: string; caption: string };
 }
 
 const publications: Publication[] = [
   {
     title: 'Learning with Quality-Adaptive Loss for Skin Lesion Classification',
-    venue: 'Submitted at INDICON 2026',
-    status: 'Under Review',
-    abstract:
-      "Image quality varies widely in clinical practice, yet most quality-aware training methods cannot observe it directly and instead estimate it from image statistics, since expert quality ratings are rarely recorded alongside diagnosis labels. This paper introduces a quality-adaptive loss function that scales each sample's training loss using a real, expert-assigned quality rating as an input to the loss, rather than to the classifier. Up-weighting low-quality samples outperformed down-weighting, improving balanced accuracy by 0.037 and sensitivity by 0.092 over baseline, a gain a shuffled-quality control confirms depends on real quality information rather than reweighting alone. The full pipeline reaches 0.840 balanced accuracy versus 0.810 without the quality-adaptive loss, with about 65% of the total gain attributable to it alone. The paper also includes an ablation study that reversed two seemingly positive findings under closer scrutiny.",
+    venue:
+      'First-author research paper, accepted at the 23rd Edition of the IEEE India Council International Conference (INDICON 2026)',
+    status: 'Accepted',
+    authors: 'Sudarshan Sudhakar, Aishwarya N, Umarani Jayaraman',
+    affiliation: 'Indian Institute of Information Technology, Design and Manufacturing, Chennai',
+    sections: [
+      {
+        heading: 'Overview',
+        body: 'Medical images vary widely in quality because of lighting, focus, framing and hair occlusion, yet most training pipelines treat every image as equally informative. This project introduces a quality-adaptive loss function for skin lesion classification. It uses the quality ratings given by dermatology experts to decide how much each training image influences the model. It is my first research paper, and my first as lead author.',
+      },
+      {
+        heading: 'Motivation',
+        body: "Quality-aware training methods usually have to estimate image quality from the image itself, because no human judgement has been recorded. MCR-SL changes this. It is the only public skin lesion dataset that records an expert quality rating (1–10) for each lesion's diagnostic image. That made it possible to use real expert judgement as a training signal, not an estimate.",
+      },
+      {
+        heading: 'Approach',
+        body: 'The proposed loss function weights each sample by its expert quality rating. Lower-quality dermoscopic images receive a higher weight, because a degraded image still carries a valid diagnosis and acts as a hard example for the model. The classifier combines an EfficientNet-B0 image encoder with a metadata encoder through channel-gated fusion. Evaluation used subject-disjoint stratified 5-fold cross-validation, so no patient appears in both training and test sets.',
+      },
+      {
+        heading: 'Results',
+        body: 'On the binary malignant versus non-malignant task, the loss alone raised balanced accuracy from 0.783 to 0.820 and sensitivity from 0.672 to 0.764. Adding test-time augmentation and multi-image averaging brings the full pipeline to 0.840 balanced accuracy. This is comparable to the 0.836 reported by the DiffMIC architecture on PAD-UFES-20, a dataset of 2,298 images, whereas this work used only 240 lesions, of which 17.9% are malignant. Attention maps show that the model focuses on the lesion itself in low-quality cases it previously misclassified.',
+      },
+      {
+        heading: 'Significance',
+        body: 'The work establishes the first published benchmark on MCR-SL. It also shows that, on small and heavily imbalanced medical datasets, changing how samples are weighted during training can be an effective alternative to a more complex architecture. The paper reports the findings that did not hold up under closer scrutiny alongside those that did.',
+      },
+    ],
+    tools: 'Python, PyTorch, timm, scikit-learn, Grad-CAM, matplotlib; trained on an NVIDIA A100',
+    links: [
+      {
+        label: 'Code: github.com/sxdxde/Learning-with-Quality-Adaptive-Loss-for-Skin-Lesion-Classification',
+        href: 'https://github.com/sxdxde/Learning-with-Quality-Adaptive-Loss-for-Skin-Lesion-Classification',
+      },
+    ],
     figure: {
-      src: '/images/publication/quality-adaptive-loss/hard_vs_nonhard_gradcam.png',
-      alt: 'Grad-CAM heatmaps comparing baseline and quality-adaptive loss predictions on high-quality and low-quality skin lesion images',
+      src: '/images/publication/quality-adaptive-loss/linkedin_gradcam_before_after.png',
+      alt: 'Grad-CAM heatmaps before and after the quality-adaptive loss on low-quality skin lesion images',
       caption:
-        'Grad-CAM on higher-quality (top) and lower-quality (bottom) images. The quality-adaptive loss corrects predictions on harder, low-quality samples.',
+        'Grad-CAM before and after the quality-adaptive loss: on low-quality cases the model previously misclassified, attention moves onto the lesion itself.',
     },
   },
 ];
@@ -72,11 +106,19 @@ function Publications() {
                   style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
                 >
                   <div className="overflow-hidden">
-                    <div className="pb-6 space-y-3">
-                      <p className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-neutral-500">
-                        Abstract
-                      </p>
-                      <p className="text-sm leading-relaxed text-neutral-600">{pub.abstract}</p>
+                    <div className="pb-6 space-y-4">
+                      <div className="text-sm leading-relaxed text-neutral-600">
+                        <p className="font-medium text-neutral-800">{pub.authors}</p>
+                        <p>{pub.affiliation}</p>
+                      </div>
+                      {pub.sections.map((section) => (
+                        <div key={section.heading} className="space-y-1.5">
+                          <p className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-neutral-500">
+                            {section.heading}
+                          </p>
+                          <p className="text-sm leading-relaxed text-neutral-600">{section.body}</p>
+                        </div>
+                      ))}
                       {pub.figure && (
                         <figure className="pt-3">
                           <img
@@ -90,6 +132,25 @@ function Publications() {
                           </figcaption>
                         </figure>
                       )}
+                      <p className="text-sm leading-relaxed text-neutral-600">
+                        <span className="text-[11px] sm:text-xs uppercase tracking-[0.15em] text-neutral-500 mr-2">
+                          Tools
+                        </span>
+                        {pub.tools}
+                      </p>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                        {pub.links.map((link) => (
+                          <a
+                            key={link.href}
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-neutral-900 underline underline-offset-2 hover:text-neutral-500 break-all"
+                          >
+                            {link.label}
+                          </a>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>

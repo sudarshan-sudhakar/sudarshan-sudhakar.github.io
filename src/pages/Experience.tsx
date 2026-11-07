@@ -38,7 +38,7 @@ const experiences: Experience[] = [
           },
           {
             heading: 'Skin lesion classification (medical imaging), guided by Dr. Umarani J',
-            text: 'A quality-adaptive loss that uses scarce expert image-quality ratings to improve classification. A shuffled-quality control showed the loss itself drives about 65% of the gain. Submitted to IEEE INDICON 2026.',
+            text: 'A quality-adaptive loss that uses scarce expert image-quality ratings to improve classification. A shuffled-quality control showed the loss itself drives about 65% of the gain. Accepted at IEEE INDICON 2026.',
           },
           {
             heading: 'False data injection on EV charging (cyber-physical security), guided by Dr. Pradeepkumar Bhale',
